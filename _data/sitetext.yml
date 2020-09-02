@@ -110,7 +110,7 @@ team:
         social:
           - url: https://www.linkedin.com/company/lego-group/
             icon: fab fa-linkedin-in
-      - name: "Your Self"
+      - name: "Self Your"
         role: "Just send us your CV"
         image: assets/img/team/joinus.jpg
         social:
