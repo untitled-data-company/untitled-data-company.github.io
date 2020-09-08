@@ -18,7 +18,7 @@ url    : "" # the base hostname & protocol for your site, e.g. http://example.co
 baseurl: "" # the subpath of your site, e.g. /blog
 
 title      : untitled data company
-email      : mucio@mucio.net #this is also the email contact forms will go to
+email      : xeqryzbw #this is also the email contact forms will go to
 description: "The consulting company for all your data needs: ETL, Data Modellilng, Data Science, ML, AI, Reporting, Dashboards..."
 author     : Francesco Mucio
 logo:     #optional, defaults to site title
