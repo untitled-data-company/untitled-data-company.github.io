@@ -6,3 +6,9 @@
 #Image Customization
 header-image: "../img/header-bg.jpg"
 contact-image: "../img/map-image.png"
+post-header-image: "../img/header-bg.jpg"
+career-page-header-image: "../img/header-bg.jpg"
+career-post-header-image: "../img/header-bg.jpg"
+blogs-page-header-image: "../img/header-bg.jpg"
+#Font Awesome icon for portfolio grid when an item is hovered over
+# blog-icon: fas fa-expand-arrows-alt fa-3x #default: fas fa-plus fa-3x

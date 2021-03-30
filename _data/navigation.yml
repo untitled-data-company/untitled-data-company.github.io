@@ -4,12 +4,18 @@ nav:
 
   # - title: "Portfolio"
   #   section: portfolio
-    
+
   - title: "About"
     section: timeline
 
   - title: "Team"
     section: team
+
+  - title: "Blog"
+    url: /blog/index.html
+
+  - title: "Careers"
+    url: /careers.html
 
   - title: "Contact"
     section: contact
