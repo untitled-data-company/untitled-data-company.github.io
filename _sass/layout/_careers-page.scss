@@ -1,0 +1,82 @@
+.careers-header {
+  min-height: 35vh;
+  height: auto;
+  position: relative;
+
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+
+  background-image: url(#{$career-page-header-image});
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-position: center center;
+  background-size: cover;
+
+  color: $gray-100;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: $gray-900;
+    opacity: 0.3;
+  }
+
+  .container {
+    position: relative;
+    text-align: center;
+    z-index: 2;
+  }
+
+  &__subtitle {
+    @media (min-width: 1200px) {
+      padding-left: 10rem;
+      padding-right: 10rem;
+    }
+  }
+}
+
+#careers {
+  .career-title {
+    @include heading-font;
+    display: block;
+    font-weight: 600;
+    font-size: 18px;
+
+    @media (min-width: 1200px) {
+      font-size: 24px;
+    }
+  }
+
+  .career {
+    width: 100%;
+    margin: 0 auto;
+
+    @media (min-width: 1200px) {
+      width: 50%;
+      max-width: 980px;
+    }
+
+    .career-container {
+      width: 100%;
+    }
+
+    ul {
+      padding: 0;
+      padding-left: 1rem;
+      list-style-type: none;
+
+      @media (min-width: 1200px) {
+        padding-left: 2rem;
+      }
+    }
+
+    .description-title {
+      font-weight: 600;
+    }
+  }
+}
