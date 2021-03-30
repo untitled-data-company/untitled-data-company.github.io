@@ -1,0 +1,46 @@
+---
+title: Category
+layout: page
+full-header: true
+---
+
+{% for category in site.categories %}
+{% assign t = category | first %}
+{% assign posts = category | last %}
+
+<!-- <div class="mt-5 container categories-container"> -->
+<section class="container">
+  <div id="{{ t }}" style="padding-top: 10rem"></div>
+  <h3 class="mb-5">Category: <span class="tag-name">{{ t }}</span></h3>
+
+  <div class="blog-list-container">
+    <div class="row categories-entry">
+      {% for post in posts %}
+      {% if post.categories contains t %}
+      <a href="{% if site.baseurl == " /" %}{{ post.url }}{% else %}{{ post.url | prepend: site.baseurl }}{% endif %}"
+        class="mb-5 col-md-4 col-sm-6 card blog-entries-item">
+
+        <div class="blog-entries-top">
+          <div class="blog-hover">
+            <div class="blog-hover-content">
+              <i class="{{ site.data.style.blog-icon | default: " fas fa-plus fa-3x" }}"></i>
+            </div>
+          </div>
+
+          <img class="img-fluid" src="{{ post.thumbnail }}" alt="">
+        </div>
+        <div class="mt-3 card-body blog_section-caption" style="background: white;">
+          <h5 class="card-title">{{ post.title }}</h5>
+          <p class="card-text text-muted">{{ post.subtitle | truncatewords: 15}}</p>
+        </div>
+      </a>
+
+
+      {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+  {% endfor %}
+  <!-- </div> -->
+</section>
