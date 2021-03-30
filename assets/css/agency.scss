@@ -1,0 +1,42 @@
+---
+---
+@charset "utf-8";
+// Core variables and mixins
+@import "base/variables.scss";
+@import "base/mixins.scss";
+
+// Custom colors
+$primary: {{ site.data.style.highlight | default: "#fed136" }} !default;
+$white: {{ site.data.style.white | default: "#fff" }} !default;
+$black: {{ site.data.style.black | default: "#000" }} !default;
+
+// Custom Images
+$header-image: "{{ site.data.style.header-image }}";
+$contact-image: "{{ site.data.style.contact-image }}";
+$post-header-image: "{{site.data.style.post-header-image}}";
+$blogs-page-header-image: "{{site.data.style.post-header-image}}";
+$career-page-header-image: "{{site.data.style.career-page-header-image}}";
+$career-post-header-image: "{{site.data.style.career-post-header-image}}";
+
+// Global CSS
+@import "base/page.scss";
+
+// Components
+@import "components/buttons.scss";
+@import "components/navbar.scss";
+@import "components/client-scroll.scss";
+@import "components/blog_card.scss";
+
+// Layout
+@import "layout/masthead.scss";
+@import "layout/services.scss";
+// @import "layout/portfolio.scss";
+@import "layout/timeline.scss";
+@import "layout/team.scss";
+@import "layout/latest-posts.scss";
+@import "layout/blog.scss";
+@import "layout/post.scss";
+@import "layout/careers-page.scss";
+@import "layout/career.scss";
+@import "layout/contact.scss";
+@import "layout/footer.scss";
