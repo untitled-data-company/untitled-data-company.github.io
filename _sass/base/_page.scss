@@ -70,3 +70,7 @@ img::selection {
 img::-moz-selection {
   background: transparent;
 }
+
+.highlighter-rouge{
+  background: $black;
+}
