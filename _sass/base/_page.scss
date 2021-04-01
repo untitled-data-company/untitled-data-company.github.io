@@ -70,3 +70,8 @@ img::selection {
 img::-moz-selection {
   background: transparent;
 }
+
+pre,
+code {
+    background-color: #000;
+}
