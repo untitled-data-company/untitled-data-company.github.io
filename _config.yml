@@ -39,10 +39,12 @@ permalink: /blog/:title
 
 markdown: kramdown
 highlighter: rouge
-# kramdown:
-#   input: GFM
-#   syntax_highlighter: pygments
-plugins:
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+  plugins:
   - jekyll-remote-theme
   - jekyll-paginate
 
