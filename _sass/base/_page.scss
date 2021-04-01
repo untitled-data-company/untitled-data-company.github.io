@@ -52,23 +52,3 @@ h6 {
   }
 }
 
-// Highlight color customization
-::-moz-selection {
-  background: $black;
-  text-shadow: none;
-}
-
-::selection {
-  background: $black;
-  text-shadow: none;
-}
-
-img::selection {
-  background: transparent;
-}
-
-img::-moz-selection {
-  background: transparent;
-}
-
- 
