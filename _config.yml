@@ -37,8 +37,8 @@ paginate: 6
 paginate_path: "/blog/page:num"
 permalink: /blog/:title
 
-markdown: kramdown
-highlighter: rouge
+# markdown: kramdown
+# highlighter: rouge
 
 kramdown:
   input: GFM
