@@ -101,17 +101,26 @@
     margin: 0 auto;
   }
 }
-
-code, pre {
+ 
+pre, code {
   font-family:Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
   color:#333;
   font-size:12px;
   overflow-x:auto;
 }
 
-pre, code {
-  font-family:Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
-  color:#333;
-  font-size:12px;
-  overflow-x:auto;
+pre {
+  padding:20px;
+  background: #3A3C42;
+  color:#f8f8f2;
+  margin:0 -20px 20px;
+
+  code {
+    color:#f8f8f2;
+  }
+
+  li & {
+    margin-left:-60px;
+    padding-left:60px;
+  }
 }
