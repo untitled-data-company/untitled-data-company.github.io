@@ -53,6 +53,7 @@ But let's try to read it line by line.
 
 ## Imports
 ![relevant xkcd](https://imgs.xkcd.com/comics/python.png)
+
 Python can do a lot of things, but to save resources not everything is available all the time. What needs to be loaded in the computer memory is left to the developers. 
 
 When you want to use something that is not part of the basic Python, you can `import` the needed Python module or library. 

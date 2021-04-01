@@ -38,7 +38,7 @@ paginate_path: "/blog/page:num"
 permalink: /blog/:title
 
 markdown: kramdown
-highlighter: pygments
+highlighter: rouge
 # kramdown:
 #   input: GFM
 #   syntax_highlighter: pygments
