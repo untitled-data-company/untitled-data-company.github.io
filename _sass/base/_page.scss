@@ -54,27 +54,21 @@ h6 {
 
 // Highlight color customization
 ::-moz-selection {
-  color: white;
+  background: $black;
   text-shadow: none;
-  background: $theme-dark;
 }
 
 ::selection {
-  color: white;
+  background: $black;
   text-shadow: none;
-  background: $theme-dark;
 }
 
 img::selection {
-  color: white;
   background: transparent;
 }
 
 img::-moz-selection {
-  color: white;
   background: transparent;
 }
 
-body {
-  -webkit-tap-highlight-color: $theme-dark;
-}
+ 
