@@ -13,7 +13,7 @@ $black: {{ site.data.style.black | default: "#000" }} !default;
 // Custom Images
 $header-image: "{{ site.data.style.header-image }}";
 $contact-image: "{{ site.data.style.contact-image }}";
-$blogs-page-header-image: "{{site.data.style.post-header-image}}";
+$blogs-page-header-image: "{{site.data.style.blogs-page-header-image}}";
 $career-page-header-image: "{{site.data.style.career-page-header-image}}";
 $career-post-header-image: "{{site.data.style.career-post-header-image}}";
 
