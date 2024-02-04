@@ -104,7 +104,7 @@ team:
         - url: https://linkedin.com/in/mucio
           icon: fab fa-linkedin-in
         - url: https://calendar.google.com/calendar/u/0/appointments/AcZssZ03VfChukYz0_IvFVj8HrDNEuwKxTiQJdQgBpI=
-          icon: fab fa-calendar
+          icon: fas fa-calendar
     - name: "Willi Müller"
       role: "Founder and Data Consultant"
       image: assets/img/team/willi_mueller.jpg
