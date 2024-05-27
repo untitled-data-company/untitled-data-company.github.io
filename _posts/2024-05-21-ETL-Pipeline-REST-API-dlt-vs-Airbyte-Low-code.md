@@ -1,41 +1,50 @@
-# How To Create A Dlt Source With A Custom Authentication Method
-# Alt 2: ELT Pipeline from OAuth REST API
-# Alt 3: Create dlt Source for REST API with OAuth 2.0 using REST API Source Toolkit
-## A Comparison Between Dlt And The Airbyte Low-Code CDK to Build a Data Platform
+# How To Create A dlt Source With A Custom Authentication Method (With Zoom Example)
+## A Comparison Between dlt And The Airbyte Low-Code CDK to Build a Data Platform
+
 
 ## tldr;
 The REST API Source toolkit is a promising component for a data platform because it allows rapid development of high-quality ELT data pipelines with hardly any code for people with medium programming experience.
-Its declarative interface uses Python dictionaries instead of YAML or JSON like previous systems – this allows more advanced developers to inject custom functionality and even write own authorization methods, e.g. different flavors of OAuth 2.0.
+Its declarative interface uses Python dictionaries instead of YAML or JSON like previous systems – this allows more advanced developers to inject custom functionality and even write their own authorization methods, e.g. different flavors of OAuth 2.0.
 In this article, we demonstrate the implementation of a dlt source that imports webinar data from Zoom using a custom OAuth 2.0 authorization.
 We compare our implementation with the implementation of the Airbyte Zoom source which was achieved using the low-code CDK.
 
+
+## Disclaimer
+[We](https://untitleddata.company/) were dlthub's design partners for the development of the REST API Source toolkit. We were the first testers and also contributed to its code.
+The impetus came from a client project where the company wanted to migrate two dozen connectors from a difficult-to-scale Airbyte open-source installation. Thus, they wanted a framework with two characteristics:
+quick connector development with code that is easy to maintain
+a system that would allow them to run the pipelines efficiently to address their issues of scale
+
+
 ## Background
-Data ingestion is a core component of a data platform and it is important understand how the characteristics of a system suit a particular organization.
+Data ingestion is a core component of a data platform and it is important to understand how the characteristics of a system suit a particular organization.
 
-[Dlthub recently released](https://dlthub.com/docs/blog/rest-api-source-client) a new REST API Source toolkit which promises high-level and Python-only development of ELT pipelines loading from REST APIs.
+[Dlthub recently released](https://dlthub.com/docs/blog/rest-api-source-client) a new REST API Source toolkit that promises high-level and Python-only development of ELT pipelines loading from REST APIs.
 
-With the goal of choosing the data loading component for a data platform in mind, we benchmark it and compare with the most prominent prior work, the Airbyte low-code connector development kit (CDK).
-We selected the Airbyte Low-code CDK as a standard of comparison because we used it in a data platform at a larger client company to  enable backend developers to load their product data into the analytical database.
+Intending to choose the data loading component for a data platform, we benchmark it and compare it with the most prominent prior work, the Airbyte low-code connector development kit (CDK).
+We selected the Airbyte Low-code CDK as a standard of comparison because we used it in a data platform at a larger client company. There, it has been enabling backend developers to load their product data into the analytical database.
 
-OAuth 2.0 is a common way to securely authorize with a server.
+OAuth 2.0 is a common way to securely authorize.
 However, many developers fear OAuth 2.0 because its implementations vary across API providers and thus it becomes complex and is re-implemented multiple times.
-Because of these subtle differences we need a flexible interface which allows customizations.
+Because of these subtle differences, we need a flexible interface that allows customizations.
 
-Thus, we added an implementation of OAuth 2.0 for Zoom to the benchmark.
+Thus, we want to benchmark how easily we can implement the specific OAuth 2.0 for Zoom to the benchmark.
 
 
 ## Reasons we want it
-We want to track the performance of our webinars or meetings and extract data, such as count of participants, contact data of webinar participants, duration of attendance, polls, reasons participants left etc.
-
 There are already ELT solutions to load Zoom's Webinar data, [such as Fivetran](https://fivetran.com/docs/connectors/applications/zoom) and [Airbyte](https://docs.airbyte.com/integrations/sources/zoom) and thus the point of this article is not to reinvent the wheel but to compare dlt's approach to REST API source development with the Airbyte Low-code CDK.
 
 We use Zoom's API as a case study to evaluate how suitable this would be as a data platform component.
 
 
-## Challenges
-Airbyte's low-code connector development kit looks promising because it lets us configure our own source using a connector builder UI which produces a YAML configuration file.
+## Challenges and Opportunities
+The most prominent solution is Airbyte Low-Code ...
+
+
+### Strengths of Prior Work
+Airbyte's low-code connector development kit looks promising because it lets us configure our custom source using a connector builder UI which produces a YAML configuration file.
 We love that the team at Airbyte developed a solution to accelerate the development of new REST API connectors and we celebrate their achievements.
-We have successfully used Airbyte at multiple clients and we have also seen that introducing the low-code CDK has enabled people with little data engineering experience to specify successfully running ETL connectors.
+We have successfully used Airbyte with multiple clients and we have also seen that introducing the low-code CDK has enabled people with little data engineering experience to specify successfully running ETL connectors.
 This enabled them to have greater ownership over their raw data imports and their full data value chain.
 The low-code CDK can be an interesting choice for a data platform because it standardizes the repetitive connector code and can ease maintenance.
 The team at Airbyte [wrote in their documentation](https://docs.airbyte.com/connector-development/config-based/low-code-cdk-overview) how they observed that "API source connectors constitute the overwhelming majority of connectors, they are also the most formulaic. API connector code almost always solves small variations of these problems":
@@ -47,35 +56,38 @@ The team at Airbyte [wrote in their documentation](https://docs.airbyte.com/conn
 6. Decoding of the response
 7. Supporting incremental loads
 
-However, using the low-code CDK we encountered not only the powerful advantages listed above but also the following challenges:
-1. The YAML code is long and repetitive and thus tedious and error-prone to write by hand. Airbyte's connector builder GUI helps generating it but it has not only the advantages but also limitations of a GUI over code, such as lack of automation and customization.
-2. The inherent limitations of YAML make it cumbersome to natively inject funtionality with callables or reuse code to keep the implementation [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
-3. Airbyte connectors run only on a full Airbyte platform installtion. Thus, we need at least one VM. Scaling open-source Airbyte on Kubernetes has shown to be difficult. In contrast, dlt is a library that [can be imported anywhere](https://dlthub.com/docs/walkthroughs/deploy-a-pipeline) – be it github actions, a Lambda function, Airflow, or in Docker on Kubernetes.
-4. Airbyte's low-code Zoom implementation does not support incremental syncing yet.
+Also, the Airbyte Low-Code CDK offers a graphical UI to configure and test the custom connector.
+#TODO link picture
 
 
-## Our Solution
+### Challenges using Prior Work
+However, using the Airbyte low-code CDK we encountered not only the powerful advantages listed above but also the following challenges:
+
+1. The YAML code is long and repetitive and thus tedious and error-prone to write by hand. Airbyte's connector builder GUI helps generate it – but along with the advantages of a GUI over code come also limitations, such as lack of automation and customization.
+2. The inherent limitations of YAML make it cumbersome to customize or natively inject functionality with callables or reuse code to keep the implementation [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
+3. Airbyte connectors run only on a full Airbyte platform installation. Thus, we need at least one VM. We've heard from multiple practicioners that they encountered difficulties while trying to scale open-source Airbyte on Kubernetes. In contrast, dlt is a library that [can be imported anywhere](https://dlthub.com/docs/walkthroughs/deploy-a-pipeline) – be it Github actions, a Lambda function, Airflow, or in Docker on Kubernetes.
+4. Airbyte's current low-code Zoom implementation does not support incremental syncing yet, but it can be added.
+
+
+### How the dlt REST API Toolkit solves these challenges
 We use the declarative flavor of the [REST API Source Toolkit](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api), which allows us to configure a generic REST API Source with the specifics of the Zoom endpoints we are interested in.
 
-
-## Things unlocked now
-1. We have a declarative and pythonic pipeline. This has a series of advantages:
-  - no special language syntax to learn
-  - our IDE understands the code and helps with autocomplete, thanks to typed dictionaries
-  - we can leverage the Python tool chain: linting, interactive debugging and stepping through the code, automated test suite, CI/CD, version control
-  - we can include callables to insert functionality and we are not restricted to strings, lists, numbers, and dictionaries
-  - we can reference and reuse code which makes our configuration DRY
+1. We have a declarative and Pythonic pipeline
+1. our IDE understands the code and helps with autocomplete, thanks to typed Python dictionaries
+1. we can leverage the Python toolchain: linting, interactive debugging and stepping through the code, automated test suite, CI/CD, version control
+2. we can include callables to insert functionality and we are not restricted to strings, lists, numbers, and dictionaries
+2. we can reference and reuse code which makes our configuration DRY
 2. We have much less code to maintain (x lines of Python vs. Airbyte's Y lines of YAML + 80 loc Python for Zoom OAuth2)
 3. We can run it everywhere where dlt runs, that is everywhere you can import a Python library
-4. We can load data incrementally
+4. We can configure incremental data loads easily
 
 
-## The Solution
+## Implementing the dlt REST API Toolkit
 
 ### Step 1: Connecting Securely with OAuth 2 to Zoom
-Dlt offers a generic OAuth 2.0 implementation of the implicit flow without which is commonly employed for server-to-server authorization without user consent.
+Dlt offers a generic OAuth 2.0 implementation of the two-legged flow which is commonly employed for server-to-server authorization without user consent.
 To connect to the Zoom API we can customize it by implementing a subclass `OAuth2Zoom`.
-The generic OAuth 2.0 implementation offers the template method `obtain_token()` which calls three step methods that our subclass needs to implement with the details specific to the Zoom API.
+The generic OAuth 2.0 implementation offers the template method `obtain_token()` which calls three different step methods that our subclass needs to implement with the details specific to the Zoom API.
 ```python
     def obtain_token(self) -> None:
         response = requests.post(**self.build_access_token_request())
@@ -94,23 +106,19 @@ class OAuth2Zoom(OAuth2ImplicitFlow):
     def build_access_token_request(self) -> Dict[str, Any]:
         authentication: str = b64encode(f"{self.client_id}:{self.client_secret}".encode()).decode()
         return {
-            "url": self.access_token_url,
+            "url": "https://zoom.us/oauth/token",
             "headers": {
                 "Authorization": f"Basic {authentication}",
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             "data": self.access_token_request_data,
         }
-
-    def parse_access_token(self, response_json: Any) -> TSecretStrValue:
-        return str(response_json.get("access_token"))
-
-    def parse_expiration_in_seconds(self, response_json: Any) -> int:
-        return int(response_json.get("expires_in", self.default_token_expiration))
 ```
 For details, see the [OAuth 2.0 documentation for Zoom](https://developers.zoom.us/docs/api/rest/using-zoom-apis/#server-to-server-authentication).
 
-With the OAuth token retrieval in place, we can now plug in this freshly written authentication class into the declarative REST API Source Toolkit:
+With the OAuth token retrieval in place, we can now plug in this freshly written authentication class into the declarative REST API Source Toolkit.
+Please note that by using `dlt.secrets` we use [dlt's built-in mechanism to handle secrets securely](https://dlthub.com/docs/general-usage/credentials/configuration). Never hardcode credentials in the source code!
+It reads secrets from a credential store, environment variables, or a secrets file.
 ```python
 import dlt
 
@@ -120,7 +128,6 @@ config: RESTAPIConfig = {
     "client": {
         "base_url": "https://api.zoom.us/v2",
         "auth": OAuth2Zoom(
-            access_token_url="https://zoom.us/oauth/token",
             access_token_request_data={
                 "grant_type": "account_credentials",
                 "account_id": dlt.secrets["sources.zoom.account_id"],
@@ -133,7 +140,7 @@ config: RESTAPIConfig = {
 ```
 
 In comparison, this is how authentication is configured using the Airbyte low-code CDK.
-Instead of our Python dictionary we find the configuration in very similar YAML.
+Instead of our Python dictionary, we find the configuration in a very similar YAML.
 
 ```yaml
   requester:
@@ -149,6 +156,17 @@ Instead of our Python dictionary we find the configuration in very similar YAML.
 ```
 The connector code also includes an [implementation of a Python class handling OAuth 2.0](https://github.com/airbytehq/airbyte/blob/751b7af4bb2c1e520055df08aff5da33e2e44052/airbyte-integrations/connectors/source-zoom/source_zoom/components.py) in a similar fashion requiring the pipeline user to pass in the `account_id`, `client_id`, and `client_secret` via Airbyte's secret backend.
 
+While trying to reproduce the Zoom connector ourselves, we were also successful without the custom class and with the following YAML configuration.
+To enter a the custom grant type we needed to switch from the GUI to the YAML code.
+```yaml
+type: OAuthAuthenticator
+refresh_request_body:
+  account_id: '{{ config[''account_id''] }}'
+token_refresh_endpoint: https://zoom.us/oauth/token
+grant_type: account_credentials
+client_id: '{{ config["client_id"] }}'
+client_secret: '{{ config["client_secret"] }}'
+```
 
 ### Step 2: Configuring Pagination
 
@@ -191,20 +209,20 @@ The `retriever` and `schema_loader` configured with the Airbyte Low-Code CDK are
 
 ### Step 3: Configuring Endpoints
 
-#### The /Users Enpoint
+#### The /users Endpoint
 The first endpoint we'd like to load is the list of users.
-With the dlt REST API Source it looks as follows:
+With the dlt REST API Source, it looks as follows:
 ```python
 config: RESTAPIConfig = {
     # omitting the previously given configs for client, base_url, auth, and config
     "resources": [ "users" ]
 },
 ```
-Our configuration contains only of the string `"users"` because dlt here uses convention over configuration and assumes that this string corresponds to the endpoint path.
+Our configuration contains only the string `"users"` because dlt here uses convention over configuration and assumes that this string corresponds to the endpoint path.
 Also, it uses the paginator we declared as a default for the REST client and can automatically find the right strategy to extract the data from the response.
 Further, dlt's core engine unpacks the JSON and infers the schema and data types.
 
-In comparison, this is the stream loading the users endpoint with the Airbyte Low-Code CDK:
+In comparison, this is the stream loading the `/users` endpoint with the Airbyte Low-Code CDK:
 ```YAML
   users_stream:
     schema_loader:
@@ -223,10 +241,25 @@ In comparison, this is the stream loading the users endpoint with the Airbyte Lo
       path: "/users"
 ```
 
+#### Defining the Schema
+Our dlt connector benefits from dlt's schema management engine.
+This means, that dlt automatically:
+- unpacks the JSON (normalization) into flat tables
+- infers the data type of each field as well as primary keys
+- optionally allows us type the columns
+- [automatically evolves the schema](https://dlthub.com/docs/general-usage/schema-evolution) according to changing data deliveries
+- optionally allows us to reject data that does not conform to the ([data contracts](https://dlthub.com/docs/general-usage/schema-contracts))
+
+The Airbyte Low-code CDK has similar capabilities in schema management.
+Yet, we found two main differences.
+First, the Airbyte Low-Code CDK can detect the JSON schema for each stream and then writes it into a file which is part of the connector source code.
+In contrast, dlt does not require us to keep the schema specification as part of the code but it keeps it in its private state metadata.
+Second, as of now, Airbyte seems to have slightly less options to react to schema changes than dlt offers.
+
 #### The /users/{user_id}/meetings Stream
 
 To retrieve all meetings belonging to a user we need to configure a resource called `meetings`.
-Meetings depends on the existing `users` resource because it resolves the `"user_id"` in the API path from the `users` resource.
+Meetings depend on the existing `users` resource because it resolves the `"user_id"` in the API path from the `users` resource.
 
 ```python
 config: RESTAPIConfig = {
@@ -243,7 +276,7 @@ config: RESTAPIConfig = {
                 "params": {
                     "user_id": {
                         "type": "resolve",
-                        "resource": "users",  # reference to parent resource
+                        "resource": "users",  # reference to the parent resource
                         "field": "id",
                     }
                 },
@@ -279,14 +312,15 @@ In comparison, this is the implementation of the dependent stream using the Airb
             parent_key: "id"
             partition_field: "parent_id"
 ```
-We noted that the specification of components, like the record extractor, record retriever, and paginator is repetitive because there seems to be no way of defining shared configurations for all resources only once.
-The dlt REST API Source, in contrast, allows us to configure commonly shared configurations only once in the [`"client"`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#client) config or in the [`"resource_defaults"`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#resource_defaults-optional) respectively.
-Additionally, we noted that the Airbyte Low-Code CDK requires a configuration about the schema and primary key for each stream.
-In contrast, it is part of dlt's core functionality to  automatically infer the schema and manage schema evolution with optional data contracts.
+We noted that the specification of components, like the record extractor, record retriever, and paginator is repetitive because we could not find a way of defining shared configurations for all resources only once.
+The dlt REST API Source, in contrast, allows us to configure commonly shared configurations only once in the [`"client"`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#client) config or the [`"resource_defaults"`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#resource_defaults-optional) respectively.
+Additionally, we noted that the Airbyte Low-Code CDK requires a configuration of the schema and primary key for each stream which the connector builder UI can luckily extracted from responses during development.
+In contrast, it is part of dlt's core functionality to automatically infer the schema and manage schema evolution with optional data contracts.
+Therefore, the schema configuration is not necessarily part of the source code.
 
-In a similar fashion, we continue defining all desired streams.
+Similarly, we continue defining all desired streams.
 We noticed that what takes only a single Python string in a single line of code using dlt requires about 22 lines of YAML configuration using the Airbyte Low-Code CDK.
-For dependent resources we require about 12 lines of Python code using dlt and about 20-35 lines of YAML using the Airbyte Low-Code CDK.
+For dependent resources, we require about 12 lines of Python code using dlt and about 20-35 lines of YAML using the Airbyte Low-Code CDK.
 
 See the full dlt REST API source implementation here.
 
@@ -299,13 +333,17 @@ import dlt
 from zoom import source
 
 pipeline = dlt.pipeline(pipeline_name="zoom_test", destination="duckdb", progress="log")
-load_info = pipeline.run(source.with_resources("users", "meetings"))
+load_info = pipeline.run(source)
 print(load_info)
 ```
 
 ## Conclusion
-TODO: repeat the things unlocked and tie it back to data platform
+We conclude from this case study that the dlt REST API Toolkit is a great building block for a data platform because it supports the rapid development of high-quality custom source connectors.
+This toolkit allows teams to ingest their domain-specific data in a way that is easy to maintain and easy to scale up and down.
+We prefer it over the Airbyte Low-code CDK, especially when we need complex authentication or custom logic. Also, when want to take advantage of the Python toolchain, such as IDE support, interactive debugging, automated test suite, version control, etc.
+We like that it inherits the advantages of dlt, such as automatic schema management and being embeddable in a lightweight manner instead of being a platform on its own because it plays together with existing schedulers and execution environment.
+However, we understand that every data platform can have unique needs according to its users.
+Thus, we might prefer the Airbyte Low-code CDK in case Airbyte is already being used and does not pose a scalability bottleneck.
+Also, Airbyte is preferable if the connector developers prefer the GUI source builder over writing Python configuration dictionaries or Python code.
 
-We conclude that the dlt REST API Source toolkit can be an excellent choice for the data loading component in a data platform.
-We like best that...
-However, we might prefer the Airbyte Lowc-code CDK in case ...
+If you're considering implementing dlt or optimizing your existing data platform, [contact us](https://untitleddata.company/) to discuss your specific requirements. Together, we explore how we can help you leverage dlt or other technologies for more efficient and scalable data infrastructure.
