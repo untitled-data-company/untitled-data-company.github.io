@@ -1,22 +1,26 @@
-# How To Create A dlt Source With A Custom Authentication Method (With Zoom Example)
-## A Comparison Between dlt And The Airbyte Low-Code CDK to Build a Data Platform
+---
+title: How To Create A dlt Source With A Custom Authentication Method (With Zoom Example)
+categories: Python, dlt
+subtitle: A Comparison Between dlt And The Airbyte Low-Code CDK to Build a Data Platform
+thumbnail: /assets/img/posts/gear-wheels.jpg)
+---
 
 
-## tldr;
-The REST API Source toolkit is a promising component for a data platform because it allows rapid development of high-quality ELT data pipelines with hardly any code for people with medium programming experience.
+# tldr;
+In this case study, we conclude that the REST API Source toolkit is a promising component for a data platform because it allows rapid development of high-quality ELT data pipelines with hardly any code for people with medium programming experience.
 Its declarative interface uses Python dictionaries instead of YAML or JSON like previous systems – this allows more advanced developers to inject custom functionality and even write their own authorization methods, e.g. different flavors of OAuth 2.0.
-In this article, we demonstrate the implementation of a dlt source that imports webinar data from Zoom using a custom OAuth 2.0 authorization.
-We compare our implementation with the implementation of the Airbyte Zoom source which was achieved using the low-code CDK.
+In this article, we demonstrate the implementation of a dlt source that imports meeting data from Zoom using a custom OAuth 2.0 authorization.
+We compare our implementation with the implementation of the community-contributed Airbyte Zoom source created using the low-code CDK.
 
-
-## Disclaimer
+# Disclaimer
 [We](https://untitleddata.company/) were dlthub's design partners for the development of the REST API Source toolkit. We were the first testers and also contributed to its code.
 The impetus came from a client project where the company wanted to migrate two dozen connectors from a difficult-to-scale Airbyte open-source installation. Thus, they wanted a framework with two characteristics:
 quick connector development with code that is easy to maintain
 a system that would allow them to run the pipelines efficiently to address their issues of scale
 
+The title image comes from [vecteezy.com](https://www.vecteezy.com/vector-art/111315-free-gear-wheels-vector)
 
-## Background
+# Background
 Data ingestion is a core component of a data platform and it is important to understand how the characteristics of a system suit a particular organization.
 
 [Dlthub recently released](https://dlthub.com/docs/blog/rest-api-source-client) a new REST API Source toolkit that promises high-level and Python-only development of ELT pipelines loading from REST APIs.
@@ -31,17 +35,20 @@ Because of these subtle differences, we need a flexible interface that allows cu
 Thus, we want to benchmark how easily we can implement the specific OAuth 2.0 for Zoom to the benchmark.
 
 
-## Reasons we want it
-There are already ELT solutions to load Zoom's Webinar data, [such as Fivetran](https://fivetran.com/docs/connectors/applications/zoom) and [Airbyte](https://docs.airbyte.com/integrations/sources/zoom) and thus the point of this article is not to reinvent the wheel but to compare dlt's approach to REST API source development with the Airbyte Low-code CDK.
+# Reasons We Want It
+The point of this article is to compare dlt's approach to REST API source development with the Airbyte Low-code CDK.
 
-We use Zoom's API as a case study to evaluate how suitable this would be as a data platform component.
+Our gola is not to develope an ETL solution to load Zoom's meeting and webinar data because there are already implementations, [such as Fivetran](https://fivetran.com/docs/connectors/applications/zoom) and [Airbyte](https://docs.airbyte.com/integrations/sources/zoom).
 
-
-## Challenges and Opportunities
-The most prominent solution is Airbyte Low-Code ...
+We use Zoom's API as a case study to evaluate how suitable the dlt REST API Source toolkit would be as a data platform component to build and maintain a multitude of source connectors.
 
 
-### Strengths of Prior Work
+# Challenges and Opportunities
+The most prominent connector development toolkint is the Airbyte Low-Code CDK.
+Therefore, we take it as a standard and compare the recently released dlt REST API Source toolkit.
+
+
+## Strengths of Prior Work
 Airbyte's low-code connector development kit looks promising because it lets us configure our custom source using a connector builder UI which produces a YAML configuration file.
 We love that the team at Airbyte developed a solution to accelerate the development of new REST API connectors and we celebrate their achievements.
 We have successfully used Airbyte with multiple clients and we have also seen that introducing the low-code CDK has enabled people with little data engineering experience to specify successfully running ETL connectors.
@@ -57,7 +64,7 @@ The team at Airbyte [wrote in their documentation](https://docs.airbyte.com/conn
 7. Supporting incremental loads
 
 Also, the Airbyte Low-Code CDK offers a graphical UI to configure and test the custom connector.
-#TODO link picture
+![](/assets/img/posts/gear-wheels.jpg)
 
 
 ### Challenges using Prior Work
