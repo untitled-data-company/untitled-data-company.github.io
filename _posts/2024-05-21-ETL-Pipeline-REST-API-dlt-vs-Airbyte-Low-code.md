@@ -64,7 +64,7 @@ The team at Airbyte [wrote in their documentation](https://docs.airbyte.com/conn
 7. Supporting incremental loads
 
 Also, the Airbyte Low-Code CDK offers a graphical UI to configure and test the custom connector.
-![](/assets/img/posts/gear-wheels.jpg)
+![Airbyte Connector Builder GUI](/assets/img/posts/airbyte-users-stream-2.png)
 
 
 ### Challenges using Prior Work
