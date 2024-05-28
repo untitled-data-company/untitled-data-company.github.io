@@ -38,13 +38,13 @@ Thus, we want to benchmark how easily we can implement the specific OAuth 2.0 fo
 # Reasons We Want It
 The point of this article is to compare dlt's approach to REST API source development with the Airbyte Low-code CDK.
 
-Our gola is not to develope an ETL solution to load Zoom's meeting and webinar data because there are already implementations, [such as Fivetran](https://fivetran.com/docs/connectors/applications/zoom) and [Airbyte](https://docs.airbyte.com/integrations/sources/zoom).
+Our goal is not to develop an ETL solution to load Zoom's meeting and webinar data because there are already implementations, [such as Fivetran](https://fivetran.com/docs/connectors/applications/zoom) and [Airbyte](https://docs.airbyte.com/integrations/sources/zoom).
 
 We use Zoom's API as a case study to evaluate how suitable the dlt REST API Source toolkit would be as a data platform component to build and maintain a multitude of source connectors.
 
 
 # Challenges and Opportunities
-The most prominent connector development toolkint is the Airbyte Low-Code CDK.
+The most prominent connector development toolkit is the Airbyte Low-Code CDK.
 Therefore, we take it as a standard and compare the recently released dlt REST API Source toolkit.
 
 
@@ -72,7 +72,7 @@ However, using the Airbyte low-code CDK we encountered not only the powerful adv
 
 1. The YAML code is long and repetitive and thus tedious and error-prone to write by hand. Airbyte's connector builder GUI helps generate it – but along with the advantages of a GUI over code come also limitations, such as lack of automation and customization.
 2. The inherent limitations of YAML make it cumbersome to customize or natively inject functionality with callables or reuse code to keep the implementation [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
-3. Airbyte connectors run only on a full Airbyte platform installation. Thus, we need at least one VM. We've heard from multiple practicioners that they encountered difficulties while trying to scale open-source Airbyte on Kubernetes. In contrast, dlt is a library that [can be imported anywhere](https://dlthub.com/docs/walkthroughs/deploy-a-pipeline) – be it Github actions, a Lambda function, Airflow, or in Docker on Kubernetes.
+3. Airbyte connectors run only on a full Airbyte platform installation. Thus, we need at least one VM. We've heard from multiple practitioners that they encountered difficulties while trying to scale open-source Airbyte on Kubernetes. In contrast, dlt is a library that [can be imported anywhere](https://dlthub.com/docs/walkthroughs/deploy-a-pipeline) – be it Github actions, a Lambda function, Airflow, or in Docker on Kubernetes.
 4. Airbyte's current low-code Zoom implementation does not support incremental syncing yet, but it can be added.
 
 
@@ -164,7 +164,7 @@ Instead of our Python dictionary, we find the configuration in a very similar YA
 The connector code also includes an [implementation of a Python class handling OAuth 2.0](https://github.com/airbytehq/airbyte/blob/751b7af4bb2c1e520055df08aff5da33e2e44052/airbyte-integrations/connectors/source-zoom/source_zoom/components.py) in a similar fashion requiring the pipeline user to pass in the `account_id`, `client_id`, and `client_secret` via Airbyte's secret backend.
 
 While trying to reproduce the Zoom connector ourselves, we were also successful without the custom class and with the following YAML configuration.
-To enter a the custom grant type we needed to switch from the GUI to the YAML code.
+To enter a custom grant type we needed to switch from the GUI to the YAML code.
 ```yaml
 type: OAuthAuthenticator
 refresh_request_body:
@@ -253,15 +253,15 @@ Our dlt connector benefits from dlt's schema management engine.
 This means, that dlt automatically:
 - unpacks the JSON (normalization) into flat tables
 - infers the data type of each field as well as primary keys
-- optionally allows us type the columns
+- optionally allows us to type the columns
 - [automatically evolves the schema](https://dlthub.com/docs/general-usage/schema-evolution) according to changing data deliveries
 - optionally allows us to reject data that does not conform to the ([data contracts](https://dlthub.com/docs/general-usage/schema-contracts))
 
 The Airbyte Low-code CDK has similar capabilities in schema management.
 Yet, we found two main differences.
-First, the Airbyte Low-Code CDK can detect the JSON schema for each stream and then writes it into a file which is part of the connector source code.
+First, the Airbyte Low-Code CDK can detect the JSON schema for each stream and then write it into a file which is part of the connector source code.
 In contrast, dlt does not require us to keep the schema specification as part of the code but it keeps it in its private state metadata.
-Second, as of now, Airbyte seems to have slightly less options to react to schema changes than dlt offers.
+Second, as of now, Airbyte seems to have slightly fewer options to react to schema changes than dlt offers.
 
 #### The /users/{user_id}/meetings Stream
 
@@ -321,7 +321,7 @@ In comparison, this is the implementation of the dependent stream using the Airb
 ```
 We noted that the specification of components, like the record extractor, record retriever, and paginator is repetitive because we could not find a way of defining shared configurations for all resources only once.
 The dlt REST API Source, in contrast, allows us to configure commonly shared configurations only once in the [`"client"`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#client) config or the [`"resource_defaults"`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#resource_defaults-optional) respectively.
-Additionally, we noted that the Airbyte Low-Code CDK requires a configuration of the schema and primary key for each stream which the connector builder UI can luckily extracted from responses during development.
+Additionally, we noted that the Airbyte Low-Code CDK requires a configuration of the schema and primary key for each stream which the connector builder UI can luckily extract from responses during development.
 In contrast, it is part of dlt's core functionality to automatically infer the schema and manage schema evolution with optional data contracts.
 Therefore, the schema configuration is not necessarily part of the source code.
 
