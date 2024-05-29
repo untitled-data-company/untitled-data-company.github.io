@@ -3,6 +3,7 @@ title: How To Create A dlt Source With A Custom Authentication Method (With Zoom
 categories: Python, dlt
 subtitle: A Comparison Between dlt And The Airbyte Low-Code CDK to Build a Data Platform
 thumbnail: /assets/img/posts/gear-wheels.jpg)
+author: Willi Müller
 ---
 
 
