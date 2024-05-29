@@ -91,7 +91,7 @@ We use the declarative flavor of the [REST API Source Toolkit](https://dlthub.co
 ## Implementing the dlt REST API Toolkit
 
 ### Step 1: Connecting Securely with OAuth 2 to Zoom
-Dlt offers a generic OAuth 2.0 implementation of the two-legged flow which is commonly employed for server-to-server authorization without user consent.
+Dlt offers a generic OAuth 2.0 implementation ([see this PR in review](https://github.com/dlt-hub/dlt/pull/1357)) of the two-legged flow which is commonly employed for server-to-server authorization without user consent.
 To connect to the Zoom API we can customize it by implementing a subclass `OAuth2Zoom`.
 The generic OAuth 2.0 implementation offers the template method `obtain_token()` which calls three different step methods that our subclass needs to implement with the details specific to the Zoom API.
 ```python
