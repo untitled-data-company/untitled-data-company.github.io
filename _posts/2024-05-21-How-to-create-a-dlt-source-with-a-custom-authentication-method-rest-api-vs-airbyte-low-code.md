@@ -15,9 +15,9 @@ We compare our implementation with the implementation of the community-contribut
 
 # Disclaimer
 [We](https://untitleddata.company/) were dlthub's design partners for the development of the REST API Source toolkit. We were the first testers and also contributed to its code.
-The impetus came from a client project where the company wanted to migrate two dozen connectors from a difficult-to-scale Airbyte open-source installation. Thus, they wanted a framework with two characteristics:
-quick connector development with code that is easy to maintain
-a system that would allow them to run the pipelines efficiently to address their issues of scale
+The impetus came from a client project where [the people-analytics platform Eqtble](https://www.eqtble.com/), wanted to migrate two dozen data source connectors from a difficult-to-scale Airbyte open-source installation. Thus, they wanted a framework with two characteristics:
+- quick connector development with code that is easy to maintain
+- a system that would allow them to run the pipelines efficiently to address their issues of scale
 
 The title image comes from [vecteezy.com](https://www.vecteezy.com/vector-art/111315-free-gear-wheels-vector)
 
