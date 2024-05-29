@@ -73,7 +73,6 @@ However, using the Airbyte low-code CDK we encountered not only the powerful adv
 1. The YAML code is long and repetitive and thus tedious and error-prone to write by hand. Airbyte's connector builder GUI helps generate it – but along with the advantages of a GUI over code come also limitations, such as lack of automation and customization.
 2. The inherent limitations of YAML make it cumbersome to customize or natively inject functionality with callables or reuse code to keep the implementation [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
 3. Airbyte connectors run only on a full Airbyte platform installation. Thus, we need at least one VM. We've heard from multiple practitioners that they encountered difficulties while trying to scale open-source Airbyte on Kubernetes. In contrast, dlt is a library that [can be imported anywhere](https://dlthub.com/docs/walkthroughs/deploy-a-pipeline) – be it Github actions, a Lambda function, Airflow, or in Docker on Kubernetes.
-4. Airbyte's current low-code Zoom implementation does not support incremental syncing yet, but it can be added.
 
 
 ### How the dlt REST API Toolkit solves these challenges
@@ -84,9 +83,8 @@ We use the declarative flavor of the [REST API Source Toolkit](https://dlthub.co
 1. we can leverage the Python toolchain: linting, interactive debugging and stepping through the code, automated test suite, CI/CD, version control
 2. we can include callables to insert functionality and we are not restricted to strings, lists, numbers, and dictionaries
 2. we can reference and reuse code which makes our configuration DRY
-2. We have much less code to maintain (x lines of Python vs. Airbyte's Y lines of YAML + 80 loc Python for Zoom OAuth2)
+2. We have much less code to maintain (229 lines of Python vs. Airbyte's 790 lines of YAML + 80 loc Python for Zoom OAuth2)
 3. We can run it everywhere where dlt runs, that is everywhere you can import a Python library
-4. We can configure incremental data loads easily
 
 
 ## Implementing the dlt REST API Toolkit
@@ -263,7 +261,7 @@ First, the Airbyte Low-Code CDK can detect the JSON schema for each stream and t
 In contrast, dlt does not require us to keep the schema specification as part of the code but it keeps it in its private state metadata.
 Second, as of now, Airbyte seems to have slightly fewer options to react to schema changes than dlt offers.
 
-#### The /users/{user_id}/meetings Stream
+#### Dependent Resources: The /users/{user_id}/meetings Endpoint
 
 To retrieve all meetings belonging to a user we need to configure a resource called `meetings`.
 Meetings depend on the existing `users` resource because it resolves the `"user_id"` in the API path from the `users` resource.
@@ -329,17 +327,96 @@ Similarly, we continue defining all desired streams.
 We noticed that what takes only a single Python string in a single line of code using dlt requires about 22 lines of YAML configuration using the Airbyte Low-Code CDK.
 For dependent resources, we require about 12 lines of Python code using dlt and about 20-35 lines of YAML using the Airbyte Low-Code CDK.
 
-See the full dlt REST API source implementation here.
+Because we have multiple resources depending on the `user_id` we can extract the dictionary declaring the `user_id` to be resolved from the `id` field in the `users` resource:
+
+```python
+resolve_user_id = {
+    "user_id": {
+        "type": "resolve",
+        "resource": "users",
+        "field": "id",
+    }
+}
+```
+
+The `/users/{user_id}/meetings` resource configuration then shrinks down to:
+```python
+{
+    "name": "meetings",
+    "endpoint": {
+        "path": "users/{user_id}/meetings",
+        "params": resolve_user_id,
+    },
+},
+```
+
+See the full [Zoom dlt REST API source implementation here](https://github.com/untitled-data-company/dlt-rest-api-tutorial/blob/main/zoom.py).
 
 In comparison, here is the full code produced with Airbytes low-code CDK via the connector builder GUI: [Airbyte Zoom Source](https://github.com/airbytehq/airbyte/blob/e669832b184d0e864a7b57343ee7d4ae3f285af1/airbyte-integrations/connectors/source-zoom/source_zoom/manifest.yaml).
 
+#### Handling Errors
+The Zoom API returns error codes in case a requested entity does not exist or a certain feature is not available.
+Often, we do not want to crash our pipeline but gracefully ignore specific errors.
+With `response_actions`, we [can define](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#response-actions) what happens in case the HTTP response code is 400 and above.
+
+For example, we want to ignore the error 404 in case the meeting has expired:
+```python
+{
+  "name": "meeting_participants_report",
+  "endpoint": {
+      "path": "/report/meetings/{meeting_id}/participants",
+      "params": resolve_meeting_id,
+      "response_actions": [
+          {"status_code": 404, "action": "ignore"},
+      ],
+  },
+},
+```
+This was the complete endpoint configuration.
+
+In comparison, this is only the error handling, not the entire stream implemented using the Airbyte Low-Code CDK:
+```yaml
+error_handler:
+  type: CompositeErrorHandler
+  error_handlers:
+    - type: DefaultErrorHandler
+      response_filters:
+        - http_codes: [400]
+          action: IGNORE
+    - type: DefaultErrorHandler
+```
+
+Depending on the API design, we might not want to ignore all responses with the same error code but only specific error messages.
+In the example below, we do not raise an exception if the response contains the substring "Registration has not been enabled for this meeting":
+```python
+"response_actions": [
+    {
+        "content": "Registration has not been enabled for this meeting",
+        "action": "ignore",
+    }
+]
+```
+
+In comparison, this is how we ignore the same substring using the Airbyte Low-Code CDK:
+```yaml
+error_handler:
+  type: CompositeErrorHandler
+  error_handlers:
+    - type: DefaultErrorHandler
+      response_filters:
+        - type: HttpResponseFilter
+          action: IGNORE
+          error_message_contains: Registration has not been enabled for this meeting
+```
 
 ### Step 4: Writing the Pipeline
 ```python
 import dlt
 from zoom import source
 
-pipeline = dlt.pipeline(pipeline_name="zoom_test", destination="duckdb", progress="log")
+pipeline = dlt.pipeline(
+    pipeline_name="zoom_test", destination="duckdb", dataset_name="zoom", progress="log"
+)
 load_info = pipeline.run(source)
 print(load_info)
 ```
