@@ -15,10 +15,10 @@ Its declarative interface uses Python dictionaries instead of YAML or JSON like 
 In this article, we implement a dlt source that imports meeting data from Zoom, using a custom OAuth 2.0 method, and we compare it with community-contributed low-code Airbyte Zoom source.
 
 # Disclaimer
-[We](https://untitleddata.company/) were dlthub's design partners for the development of the REST API Source toolkit. We were the first testers and also contributed to its code.
-The impetus came from a client project where [the people-analytics platform Eqtble](https://www.eqtble.com/), wanted to migrate two dozen data source connectors from a difficult-to-scale Airbyte open-source installation. Thus, they wanted a framework with two characteristics:
-- quick connector development with code that is easy to maintain
-- a system that would allow them to run the pipelines efficiently to address their issues of scale
+[We](https://untitleddata.company/) were dlthub's design partners for the development of the REST API Source toolkit. We were their first testers and also contributed to its code.
+The impetus came from a client project we delivered for [the people-analytics platform Eqtble](https://www.eqtble.com/); they wanted to migrate two dozen data source connectors from a difficult-to-scale Airbyte open-source installation, they needed a framework with two characteristics:
+- a quick connector development kit that resulted in easy to maintain code
+- a system that would allow them to run their pipelines at scale and efficiently
 
 The author of the title photo is [Miguel Á Padriñán A](https://www.instagram.com/padrinan).
 
@@ -27,7 +27,7 @@ Data ingestion is a core component of a data platform and it is important to und
 
 [Dlthub recently released](https://dlthub.com/docs/blog/rest-api-source-client) a new REST API Source toolkit that promises high-level and Python-only development of ELT pipelines loading from REST APIs.
 
-Intending to choose the data loading component for a data platform, we benchmark it and compare it with the most prominent prior work, the Airbyte low-code connector development kit (CDK).
+To choose the data loading component for a data platform, we benchmark it and compare it with the most prominent prior work, the Airbyte low-code connector development kit (CDK).
 We selected the Airbyte Low-code CDK as a standard of comparison because we used it in a data platform at a larger client company. There, it has been enabling backend developers to load their product data into the analytical database.
 
 OAuth 2.0 is a common way to securely authorize.
