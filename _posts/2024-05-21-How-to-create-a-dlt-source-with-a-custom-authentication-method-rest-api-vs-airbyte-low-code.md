@@ -2,16 +2,17 @@
 title: How To Create A dlt Source With A Custom Authentication Method (With Zoom Example)
 categories: Python, dlt
 subtitle: A Comparison Between dlt And The Airbyte Low-Code CDK to Build a Data Platform
-thumbnail: /assets/img/posts/gear-wheels.jpg)
+thumbnail: /assets/img/posts/tools-1.jpg
 author: Willi Müller
 ---
 
 
 # tldr;
-In this case study, we conclude that the REST API Source toolkit is a promising component for a data platform because it allows rapid development of high-quality ELT data pipelines with hardly any code for people with medium programming experience.
+In this case study, we demonstrate that the dlt REST API Source toolkit is a promising component for a data platform because it allows rapid development of high-quality ELT data pipelines with hardly any code for people with medium programming experience.
+
 Its declarative interface uses Python dictionaries instead of YAML or JSON like previous systems – this allows more advanced developers to inject custom functionality and even write their own authorization methods, e.g. different flavors of OAuth 2.0.
-In this article, we demonstrate the implementation of a dlt source that imports meeting data from Zoom using a custom OAuth 2.0 authorization.
-We compare our implementation with the implementation of the community-contributed Airbyte Zoom source created using the low-code CDK.
+
+In this article, we implement a dlt source that imports meeting data from Zoom, using a custom OAuth 2.0 method, and we compare it with community-contributed low-code Airbyte Zoom source.
 
 # Disclaimer
 [We](https://untitleddata.company/) were dlthub's design partners for the development of the REST API Source toolkit. We were the first testers and also contributed to its code.
@@ -19,7 +20,7 @@ The impetus came from a client project where [the people-analytics platform Eqtb
 - quick connector development with code that is easy to maintain
 - a system that would allow them to run the pipelines efficiently to address their issues of scale
 
-The title image comes from [vecteezy.com](https://www.vecteezy.com/vector-art/111315-free-gear-wheels-vector)
+The author of the title photo is [Miguel Á Padriñán A](https://www.instagram.com/padrinan).
 
 # Background
 Data ingestion is a core component of a data platform and it is important to understand how the characteristics of a system suit a particular organization.
