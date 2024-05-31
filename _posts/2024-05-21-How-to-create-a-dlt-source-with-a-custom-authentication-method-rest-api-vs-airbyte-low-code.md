@@ -199,7 +199,7 @@ config: RESTAPIConfig = {
 ```
 
 In comparison, this is the pagination using the Airbyte Low-Code CDK:
-```YAML
+```yaml
   zoom_paginator:
     type: DefaultPaginator
     pagination_strategy:
@@ -234,7 +234,8 @@ Also, it uses the paginator we declared as a default for the REST client and can
 Further, dlt's core engine unpacks the JSON and infers the schema and data types.
 
 In comparison, this is the stream loading the `/users` endpoint with the Airbyte Low-Code CDK:
-```YAML
+
+```yaml
   users_stream:
     schema_loader:
       $ref: "#/definitions/schema_loader"
@@ -428,6 +429,10 @@ pipeline = dlt.pipeline(
 load_info = pipeline.run(source)
 print(load_info)
 ```
+
+## Going Further
+We published a series of [video tutorials on the REST API Source Toolkit](https://www.youtube.com/playlist?list=PLpTgUMBCn15rs2NkB4ise780UxLKImZTh). Watch us code and explain from installation to basic and advanced endpoint configuration, authentication, and incremental loading.
+
 
 ## Conclusion
 We conclude from this case study that the dlt REST API Toolkit is a great building block for a data platform because it supports the rapid development of high-quality custom source connectors.
