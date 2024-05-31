@@ -419,6 +419,8 @@ Now, we have completed the source connector. See the full [Zoom dlt REST API sou
 
 In comparison, here is the full code produced by Airbyte contributors with the Airbyte low-code CDK via the connector builder GUI: [Airbyte Zoom Source](https://github.com/airbytehq/airbyte/blob/e669832b184d0e864a7b57343ee7d4ae3f285af1/airbyte-integrations/connectors/source-zoom/source_zoom/manifest.yaml).
 
+The last step is to write a pipleine which uses our new dlt Zoom source connector.
+
 ```python
 import dlt
 from zoom import source
