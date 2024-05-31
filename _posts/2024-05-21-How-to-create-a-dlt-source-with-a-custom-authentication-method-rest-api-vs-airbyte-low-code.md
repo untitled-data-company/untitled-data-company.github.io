@@ -8,11 +8,13 @@ author: Willi Müller
 
 
 # tldr;
-In this case study, we demonstrate that the dlt REST API Source toolkit is a promising component for a data platform because it allows rapid development of high-quality ELT data pipelines with hardly any code for people with medium programming experience.
+In this case study, we demonstrate that the REST API Source toolkit is a promising component for a data platform because it allows rapid development of high-quality ELT data pipelines with hardly any code for people with medium programming experience.
 
-Its declarative interface uses Python dictionaries instead of YAML or JSON like previous systems – this allows more advanced developers to inject custom functionality and even write their own authorization methods, e.g. different flavors of OAuth 2.0.
+Its declarative interface uses Python dictionaries instead of YAML or JSON that previous systems employ. This choice allows more advanced developers to inject custom functionality, such as writing their own authorization methods, e.g. different flavors of OAuth 2.0.
 
-In this article, we implement a dlt source that imports meeting data from Zoom, using a custom OAuth 2.0 method, and we compare it with community-contributed low-code Airbyte Zoom source.
+We implement a dlt source that imports meeting and webinar data from Zoom using a custom OAuth 2.0 authorization.
+In the following sections, we compare our [dlt Zoom source](https://github.com/untitled-data-company/dlt-rest-api-tutorial/blob/main/zoom.py) with the [Airbyte Zoom source](https://github.com/airbytehq/airbyte/blob/e669832b184d0e864a7b57343ee7d4ae3f285af1/airbyte-integrations/connectors/source-zoom/source_zoom/manifest.yaml) created using the low-code CDK and discuss commonalities and differences.
+
 
 # Disclaimer
 [We](https://untitleddata.company/) were dlthub's design partners for the development of the REST API Source toolkit. We were their first testers and also contributed to its code.
@@ -21,6 +23,7 @@ The impetus came from a client project we delivered for [the people-analytics pl
 - a system that would allow them to run their pipelines at scale and efficiently
 
 The author of the title photo is [Miguel Á Padriñán A](https://www.instagram.com/padrinan).
+
 
 # Background
 Data ingestion is a core component of a data platform and it is important to understand how the characteristics of a system suit a particular organization.
@@ -34,7 +37,7 @@ OAuth 2.0 is a common way to securely authorize.
 However, many developers fear OAuth 2.0 because its implementations vary across API providers and thus it becomes complex and is re-implemented multiple times.
 Because of these subtle differences, we need a flexible interface that allows customizations.
 
-Thus, we want to benchmark how easily we can implement the specific OAuth 2.0 for Zoom to the benchmark.
+Thus, we want to benchmark how easily we can implement the specific OAuth 2.0 for the Zoom API.
 
 
 # Reasons We Want It
@@ -85,8 +88,8 @@ We use the declarative flavor of the [REST API Source Toolkit](https://dlthub.co
 1. we can leverage the Python toolchain: linting, interactive debugging and stepping through the code, automated test suite, CI/CD, version control
 2. we can include callables to insert functionality and we are not restricted to strings, lists, numbers, and dictionaries
 2. we can reference and reuse code which makes our configuration DRY
-2. We have much less code to maintain (229 lines of Python vs. Airbyte's 790 lines of YAML + 80 loc Python for Zoom OAuth2)
-3. We can run it everywhere where dlt runs, that is everywhere you can import a Python library
+2. We have much less code to maintain (229 lines of Python vs. Airbyte's 790 lines of YAML + 80 lines of Python for Zoom's OAuth 2.0)
+3. We can run it everywhere where dlt runs, that is everywhere a Python library can be imported
 
 
 ## Implementing the dlt REST API Toolkit
@@ -126,6 +129,7 @@ For details, see the [OAuth 2.0 documentation for Zoom](https://developers.zoom.
 With the OAuth token retrieval in place, we can now plug in this freshly written authentication class into the declarative REST API Source Toolkit.
 Please note that by using `dlt.secrets` we use [dlt's built-in mechanism to handle secrets securely](https://dlthub.com/docs/general-usage/credentials/configuration). Never hardcode credentials in the source code!
 It reads secrets from a credential store, environment variables, or a secrets file.
+
 ```python
 import dlt
 
@@ -341,7 +345,7 @@ resolve_user_id = {
 }
 ```
 
-The `/users/{user_id}/meetings` resource configuration then shrinks down to:
+The `/users/{user_id}/meetings` resource configuration then shrinks from 12 down to 7 lines:
 ```python
 {
     "name": "meetings",
@@ -352,9 +356,6 @@ The `/users/{user_id}/meetings` resource configuration then shrinks down to:
 },
 ```
 
-See the full [Zoom dlt REST API source implementation here](https://github.com/untitled-data-company/dlt-rest-api-tutorial/blob/main/zoom.py).
-
-In comparison, here is the full code produced with Airbytes low-code CDK via the connector builder GUI: [Airbyte Zoom Source](https://github.com/airbytehq/airbyte/blob/e669832b184d0e864a7b57343ee7d4ae3f285af1/airbyte-integrations/connectors/source-zoom/source_zoom/manifest.yaml).
 
 #### Handling Errors
 The Zoom API returns error codes in case a requested entity does not exist or a certain feature is not available.
@@ -411,7 +412,12 @@ error_handler:
           error_message_contains: Registration has not been enabled for this meeting
 ```
 
+
 ### Step 4: Writing the Pipeline
+Now, we have completed the source connector. See the full [Zoom dlt REST API source here](https://github.com/untitled-data-company/dlt-rest-api-tutorial/blob/main/zoom.py).
+
+In comparison, here is the full code produced by Airbyte contributors with the Airbyte low-code CDK via the connector builder GUI: [Airbyte Zoom Source](https://github.com/airbytehq/airbyte/blob/e669832b184d0e864a7b57343ee7d4ae3f285af1/airbyte-integrations/connectors/source-zoom/source_zoom/manifest.yaml).
+
 ```python
 import dlt
 from zoom import source
