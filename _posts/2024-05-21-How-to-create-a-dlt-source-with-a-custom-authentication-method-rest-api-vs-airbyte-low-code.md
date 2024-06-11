@@ -10,7 +10,7 @@ author: Willi Müller
 # tldr;
 In this case study, we demonstrate that the REST API Source toolkit is a promising component for a data platform because it allows rapid development of high-quality ELT data pipelines with hardly any code for people with medium programming experience.
 
-Its declarative interface uses Python dictionaries instead of YAML or JSON that previous systems employ. This choice allows more advanced developers to inject custom functionality, such as writing their own authorization methods, e.g. different flavors of OAuth 2.0.
+Its declarative interface uses Python dictionaries instead of YAML or JSON which previous systems employ. This choice allows more advanced developers to inject custom functionality, such as writing their own authorization methods, e.g. different flavors of OAuth 2.0.
 
 We implement a dlt source that imports meeting and webinar data from Zoom using a custom OAuth 2.0 authorization.
 In the following sections, we compare our [dlt Zoom source](https://github.com/untitled-data-company/dlt-rest-api-tutorial/blob/main/zoom.py) with the [Airbyte Zoom source](https://github.com/airbytehq/airbyte/blob/e669832b184d0e864a7b57343ee7d4ae3f285af1/airbyte-integrations/connectors/source-zoom/source_zoom/manifest.yaml) created using the low-code CDK and discuss commonalities and differences.
@@ -19,7 +19,7 @@ In the following sections, we compare our [dlt Zoom source](https://github.com/u
 # Disclaimer
 [We](https://untitleddata.company/) were dlthub's design partners for the development of the REST API Source toolkit. We were their first testers and also contributed to its code.
 The impetus came from a client project we delivered for [the people-analytics platform Eqtble](https://www.eqtble.com/); they wanted to migrate two dozen data source connectors from a difficult-to-scale Airbyte open-source installation, they needed a framework with two characteristics:
-- a quick connector development kit that resulted in easy to maintain code
+- a quick connector development kit that resulted in easy-to-maintain code
 - a system that would allow them to run their pipelines at scale and efficiently
 
 The author of the title photo is [Miguel Á Padriñán A](https://www.instagram.com/padrinan).
@@ -75,9 +75,15 @@ Also, the Airbyte Low-Code CDK offers a graphical UI to configure and test the c
 ### Challenges using Prior Work
 However, using the Airbyte low-code CDK we encountered not only the powerful advantages listed above but also the following challenges:
 
-1. The YAML code is long and repetitive and thus tedious and error-prone to write by hand. Airbyte's connector builder GUI helps generate it – but along with the advantages of a GUI over code come also limitations, such as lack of automation and customization.
-2. The inherent limitations of YAML make it cumbersome to customize or natively inject functionality with callables or reuse code to keep the implementation [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
-3. Airbyte connectors run only on a full Airbyte platform installation. Thus, we need at least one VM. We've heard from multiple practitioners that they encountered difficulties while trying to scale open-source Airbyte on Kubernetes. In contrast, dlt is a library that [can be imported anywhere](https://dlthub.com/docs/walkthroughs/deploy-a-pipeline) – be it Github actions, a Lambda function, Airflow, or in Docker on Kubernetes.
+1. The YAML code can be error-prone to write by hand. Airbyte's connector builder GUI is a great help in generating it – but along with the advantages of a GUI over code come also limitations, such as a switch between GUI and text when we want to customize, generate, or version control the connector code.
+Before Spring 2024, the generated YAML was very long and repetitive and at the time of writing this article, most released connectors are still repetitive.
+2. The inherent limitations of YAML make it cumbersome to customize or natively inject functionality with callables or reuse code to keep the implementation [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+The helpful folks from Airbyte [pointed out](https://www.linkedin.com/feed/update/urn:li:activity:7201580115242229763?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7201580115242229763%2C7202011477782786049%29&replyUrn=urn%3Ali%3Acomment%3A%28activity%3A7201580115242229763%2C7202011652026740737%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287202011477782786049%2Curn%3Ali%3Aactivity%3A7201580115242229763%29&dashReplyUrn=urn%3Ali%3Afsd_comment%3A%287202011652026740737%2Curn%3Ali%3Aactivity%3A7201580115242229763%29) that it is possible now to reference custom Python components.
+However, I could not find documentation and also could not see how to do it in the Builder UI but I'm confident that it will become more apparent in upcoming releases.
+3. Until the advent of [pyAirbyte](https://docs.airbyte.com/using-airbyte/pyairbyte/getting-started), Airbyte connectors could run only on a full Airbyte platform installation.
+Thus, we needed at least one VM and we've heard from multiple practitioners that they encountered difficulties while trying to scale open-source Airbyte on Kubernetes.
+With pyAirbyte, connectors created using the connector builder UI can be executed without Docker and VM. But at the time of writing this article, we could not find documentation on how to do it.
+In contrast, dlt is a library that [can be imported anywhere](https://dlthub.com/docs/walkthroughs/deploy-a-pipeline) – be it Github actions, a Lambda function, Airflow, or in Docker on Kubernetes and it includes code generators that make it easy to deploy to Airflow, Github actions, cloud functions, etc.
 
 
 ### How the dlt REST API Toolkit solves these challenges
@@ -324,8 +330,9 @@ In comparison, this is the implementation of the dependent stream using the Airb
             parent_key: "id"
             partition_field: "parent_id"
 ```
-We noted that the specification of components, like the record extractor, record retriever, and paginator is repetitive because we could not find a way of defining shared configurations for all resources only once.
-The dlt REST API Source, in contrast, allows us to configure commonly shared configurations only once in the [`"client"`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#client) config or the [`"resource_defaults"`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#resource_defaults-optional) respectively.
+We noted that common components, such as the record extractor, record retriever, and paginator are referenced from all streams.
+
+In contrast, the dlt REST API Source allows us to configure commonly shared configurations only once in the [`"client"`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#client) config or the [`"resource_defaults"`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#resource_defaults-optional) respectively.
 Additionally, we noted that the Airbyte Low-Code CDK requires a configuration of the schema and primary key for each stream which the connector builder UI can luckily extract from responses during development.
 In contrast, it is part of dlt's core functionality to automatically infer the schema and manage schema evolution with optional data contracts.
 Therefore, the schema configuration is not necessarily part of the source code.
@@ -419,7 +426,7 @@ Now, we have completed the source connector. See the full [Zoom dlt REST API sou
 
 In comparison, here is the full code produced by Airbyte contributors with the Airbyte low-code CDK via the connector builder GUI: [Airbyte Zoom Source](https://github.com/airbytehq/airbyte/blob/e669832b184d0e864a7b57343ee7d4ae3f285af1/airbyte-integrations/connectors/source-zoom/source_zoom/manifest.yaml).
 
-The last step is to write a pipleine which uses our new dlt Zoom source connector.
+The last step is to write a pipeline that uses our new dlt Zoom source connector.
 
 ```python
 import dlt
@@ -439,10 +446,16 @@ We published a series of [video tutorials on the REST API Source Toolkit](https:
 ## Conclusion
 We conclude from this case study that the dlt REST API Toolkit is a great building block for a data platform because it supports the rapid development of high-quality custom source connectors.
 This toolkit allows teams to ingest their domain-specific data in a way that is easy to maintain and easy to scale up and down.
-We prefer it over the Airbyte Low-code CDK, especially when we need complex authentication or custom logic. Also, when want to take advantage of the Python toolchain, such as IDE support, interactive debugging, automated test suite, version control, etc.
+
+### When We Recommend The dlt REST API Toolkit
+In general, we prefer it over the Airbyte Low-code CDK, especially when we need complex authentication or custom logic.
+Also, we'd use dlt when we want to take advantage of the Python toolchain, such as IDE support, interactive debugging, automated test suite, version control, etc.
 We like that it inherits the advantages of dlt, such as automatic schema management and being embeddable in a lightweight manner instead of being a platform on its own because it plays together with existing schedulers and execution environment.
+
+### When We Recommend The Airbyte Low-code CDK
 However, we understand that every data platform can have unique needs according to its users.
 Thus, we might prefer the Airbyte Low-code CDK in case Airbyte is already being used and does not pose a scalability bottleneck.
-Also, Airbyte is preferable if the connector developers prefer the GUI source builder over writing Python configuration dictionaries or Python code.
+We further recommend Airbyte if the connector developers prefer the GUI source builder over writing Python configuration dictionaries or Python code.
+At the time of updating this article (2024-06-11), the Airbyte Low-code CDK also has a few functionalities that the declarative dlt REST API source does not offer yet, such as configuring transformations to remove fields from the response or to add fields.
 
-If you're considering implementing dlt or optimizing your existing data platform, [contact us](https://untitleddata.company/) to discuss your specific requirements. Together, we explore how we can help you leverage dlt or other technologies for more efficient and scalable data infrastructure.
+If you are considering implementing dlt or Airbyte or want to optimize your existing data platform, [contact us](https://untitleddata.company/) to discuss your specific requirements. Together, we explore how we can help you leverage dlt and other technologies for more efficient and scalable data infrastructure.
