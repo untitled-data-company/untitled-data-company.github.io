@@ -7,9 +7,11 @@ author: Francesco Mucio
 ---
 
 **Requirements:** This post will be easier to read if you are familiar with:
-- [dlt](https://dlthub.com) - a Python library to move data between (many) sources to (many) destination.
-- the dlt [REST API source](https://dlthub.com) - a dlt source to ingest data from REST APIs in a declarative way.
 - a basic knowledge of [Python](https://www.python.org/) lists and list comprehension.
+- [dlt](https://dlthub.com) - a Python library to move data between (many) sources to (many) destination.
+- the dlt [REST API source](https://dlthub.com) - a dlt source to ingest data from REST APIs in a declarative way. [Here](https://www.youtube.com/watch?v=rdNj2S3lli0&ab_channel=UntitledDataCompany) a quick recap.
+- some interest in getting data from a REST API.
+
  
 # Python > YAML 
 When we started discussing a declarative way to ingest REST API data with dlt, one thing was clear in my mind: we would stick to Python. Sure, someone will soon come up with a YAML version of it, but that's fine. The YAML version will be a wrapper and, like every wrapper, it will limit the available features (making other things simpler). Wrapping is perfect to give someone a gift like a chocolate box or for making a certain feature easier to use.
@@ -19,9 +21,9 @@ If you dealt enough with YAML (or any DSL), you will try to write/generate it us
 Better stick to Python. You can still become a [YAML engineer](https://www.reddit.com/r/ProgrammerHumor/comments/9thtqf/seriously_are_we_all_yaml_engineers_now/) later.
 
 # The problem - Passing a list of values to a query parameter
-Recently someone in the [dlt Slack](https://join.slack.com/t/dlthub-community/shared_invite/zt-1n5193dbq-rCBmJ6p~ckpSFK4hCF2dYA) (join it if you like dlt) asked for a way to get data from the same REST endpoint passing a list of value for a parameter. Imagine, you are a retail and you need to call the `users?id={id}` endpoint for each users ID in a list that changes every day.
+Recently someone in the [dlt Slack](https://join.slack.com/t/dlthub-community/shared_invite/zt-1n5193dbq-rCBmJ6p~ckpSFK4hCF2dYA) asked for a way to get data from an API endpoint passing multiple values as a query parameter. Imagine you are a customer centric business, everyday you get a list of users who celebrate their birthday today, and you need to send them flowers; to do this you can use the `users?id={id}` endpoint to get their address. Because you are a successful business, you have many customers and you need to make many API calls.
 
-Now if you are familiar with the dlt REST API, you know that we can pass a value to an url query parameter with a configuration like this:
+Now if you are familiar with the dlt REST API source, you know that we can pass a value to [a query parameter like this](https://www.youtube.com/watch?v=rdNj2S3lli0&t=718):
 
 ```python
     config_object = {
@@ -40,16 +42,16 @@ Now if you are familiar with the dlt REST API, you know that we can pass a value
         ...
     }
 ```
-In this way the value `2` will replace the placeholder `{id}`. This works well for a single value, but what if we need to pass multiple values (`ids = [1, 2, 3]`) when the endpoint accepts only atomic values (`1` or `2` or `3`)?
+In this way the value `2` will replace the placeholder `{id}`. This works well for a single value. But what if we need to pass multiple values (`ids = [1, 2, 3]`) and the endpoint accepts only atomic values (`1` or `2` or `3`)?
 
 # Looking for a solution
-Our first idea would be a feature request: when a list is passed the REST API source will use all the values of the list. Let's look into that.
+Our first idea would be to submit a feature request for dlt: when a list is passed, the REST API source will use all the values of the list. This sounds good, but let's look into that.
 
-What should happen if there are two query parameters with a list of values (`id1 = [1, 2, 3]` and `id2=["a", "b", "c"]`)? 
+What if, for the same endpoint, we have two query parameters with a list of values (`id1 = [1, 2, 3]` and `id2=["a", "b", "c"]`)? 
 
-Should we use them in parallel (`(1, "a")`, `(2, "b")`, `(3, "c")`) or should we do a cartesian product (`(1, "a")`, `(1, "b")`, `(1, "c")`, `(2, "a")`, and so on)? Taking on decision insted of another could cause problems downhill. 
+Should we use them in parallel (`(1, "a")`, `(2, "b")`, `(3, "c")`) or should we do a cartesian product (`(1, "a")`, `(1, "b")`, `(1, "c")`, `(2, "a")`, and so on)? Taking one decision instead of another could cause  downhill problems. 
 
-Another thing to consider is how the REST API Source will call the endpoint: because the endpoint can accept only a single value, there is no alternative, there will be 3 different call:
+Another thing to consider is how the REST API source will call the endpoint: since the endpoint can accept only a single value, there is no alternative, there will be 3 different call:
 
 ```
 HTTP GET .../users?id=1
