@@ -7,8 +7,8 @@ author: Francesco Mucio
 ---
 
 **Requirements:** This post will be easier to read if you are familiar with:
-- [dlt](https://dlthub.com) a Python library to move data between (many) sources to (many) destination.
-- the dlt [REST API source](https://dlthub.com) a dlt source to ingest data from REST APIs in a declarative way.
+- [dlt](https://dlthub.com) - a Python library to move data between (many) sources to (many) destination.
+- the dlt [REST API source](https://dlthub.com) - a dlt source to ingest data from REST APIs in a declarative way.
 - a basic knowledge of [Python](https://www.python.org/) lists and list comprehension.
  
 # Python > YAML 
@@ -43,7 +43,7 @@ Now if you are familiar with the dlt REST API, you know that we can pass a value
 In this way the value `2` will replace the placeholder `{id}`. This works well for a single value, but what if we need to pass multiple values (`ids = [1, 2, 3]`) when the endpoint accepts only atomic values (`1` or `2` or `3`)?
 
 # Looking for a solution
-The first idea would be a feature request: when a list is passed the REST API source will use all the values of the list. Let's look into that.
+Our first idea would be a feature request: when a list is passed the REST API source will use all the values of the list. Let's look into that.
 
 What should happen if there are two query parameters with a list of values (`id1 = [1, 2, 3]` and `id2=["a", "b", "c"]`)? 
 
