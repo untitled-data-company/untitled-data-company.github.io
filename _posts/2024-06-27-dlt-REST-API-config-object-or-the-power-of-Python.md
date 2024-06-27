@@ -6,17 +6,17 @@ thumbnail: /assets/img/posts/food-preparation.jpg
 author: Francesco Mucio
 ---
 
-**Requirements:** To understand what I am going to talk about you should be familiar with:
+**Requirements:** This post will be easier to read if you are familiar with:
 - [dlt](https://dlthub.com) a Python library to move data between (many) sources to (many) destination.
 - the dlt [REST API source](https://dlthub.com) a dlt source to ingest data from REST APIs in a declarative way.
-- a basic knowledge of [Python](https://www.python.org/) data structures like 
+- a basic knowledge of [Python](https://www.python.org/) lists and list comprehension.
  
 # Python > YAML 
-When we started discussing a declarative way to ingest REST API data with dlt, one thing was clear in my mind: we stick to Python. Sure someone will come up with a YAML version of it, but that's fine, the YAML version will be a wrapper and like every wrapper will limit the available features. Wrapping is perfect to give someone a gift like easiness of use.
+When we started discussing a declarative way to ingest REST API data with dlt, one thing was clear in my mind: we would stick to Python. Sure, someone will soon come up with a YAML version of it, but that's fine. The YAML version will be a wrapper and, like every wrapper, it will limit the available features (making other things simpler). Wrapping is perfect to give someone a gift like a chocolate box or for making a certain feature easier to use.
 
 If you dealt enough with YAML (or any DSL), you will try to write/generate it using a different tool or language. It is a constant struggle. The big problem is that you cannot go lower than the features exposed by YAML, you cannot see what is underneath it.
 
-Better stick to Python. You can still become a YAML engineer later.
+Better stick to Python. You can still become a [YAML engineer](https://www.reddit.com/r/ProgrammerHumor/comments/9thtqf/seriously_are_we_all_yaml_engineers_now/) later.
 
 # The problem - Passing a list of values to a query parameter
 Recently someone in the [dlt Slack](https://join.slack.com/t/dlthub-community/shared_invite/zt-1n5193dbq-rCBmJ6p~ckpSFK4hCF2dYA) (join it if you like dlt) asked for a way to get data from the same REST endpoint passing a list of value for a parameter. Imagine, you are a retail and you need to call the `users?id={id}` endpoint for each users ID in a list that changes every day.
