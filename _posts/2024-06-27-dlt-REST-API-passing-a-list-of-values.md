@@ -49,7 +49,7 @@ Our first idea would be to submit a feature request for dlt: when a list is pass
 
 What if, for the same endpoint, we have two query parameters with a list of values (`id1 = [1, 2, 3]` and `id2=["a", "b", "c"]`)? 
 
-Should we use them in parallel (`(1, "a")`, `(2, "b")`, `(3, "c")`) or should we do a cartesian product (`(1, "a")`, `(1, "b")`, `(1, "c")`, `(2, "a")`, and so on)? Taking one decision instead of another could cause  downhill problems. 
+Should we use them in parallel (`(1, "a")`, `(2, "b")`, `(3, "c")`) or should we do a Cartesian product (`(1, "a")`, `(1, "b")`, `(1, "c")`, `(2, "a")`, and so on)? Taking one decision instead of another could cause problems downhill. 
 
 Another thing to consider is how the REST API source will call the endpoint: since the endpoint can accept only a single value, there is no alternative, there will be 3 different call:
 
