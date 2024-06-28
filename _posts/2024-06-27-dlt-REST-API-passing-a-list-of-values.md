@@ -6,7 +6,9 @@ thumbnail: /assets/img/posts/food-preparation.jpg
 author: Francesco Mucio
 ---
 
-**Requirements:** This post will be easier to read if you are familiar with:
+## Reding Requirements
+
+This post will be easier to read if you are familiar with:
 - a basic knowledge of [Python](https://www.python.org/) lists and list comprehension.
 - [dlt](https://dlthub.com) - a Python library to move data between (many) sources to (many) destination.
 - the dlt [REST API source](https://dlthub.com) - a dlt source to ingest data from REST APIs in a declarative way. [Here](https://www.youtube.com/watch?v=rdNj2S3lli0&ab_channel=UntitledDataCompany) a quick recap.
@@ -21,7 +23,9 @@ If you dealt enough with YAML (or any DSL), you will try to write/generate it us
 Better stick to Python. You can still become a [YAML engineer](https://www.youtube.com/watch?v=3L_HoTT3A6U) later.
 
 # The problem - Passing a list of values to a query parameter
-Recently someone in the [dlt Slack](https://join.slack.com/t/dlthub-community/shared_invite/zt-1n5193dbq-rCBmJ6p~ckpSFK4hCF2dYA) asked for a way to get data from an API endpoint passing multiple values as a query parameter. Imagine you are a customer centric business, everyday you get a list of users who celebrate their birthday today, and you need to send them flowers; to do this you can use the `users?id={id}` endpoint to get their address. Because you are a successful business, you have many customers and you need to make many API calls.
+Recently someone in the [dlt Slack](https://join.slack.com/t/dlthub-community/shared_invite/zt-1n5193dbq-rCBmJ6p~ckpSFK4hCF2dYA) asked for a way to get data from an API endpoint passing multiple values as a query parameter. 
+
+Imagine you are a customer centric business, everyday you get a list of users who celebrate their birthday today, and you need to send them flowers; to do this you can use the `users?id={id}` endpoint to get their address. Because you are a successful business, you have many customers and you need to make many API calls.
 
 Now if you are familiar with the dlt REST API source, you know that we can pass a value to [a query parameter like this](https://www.youtube.com/watch?v=rdNj2S3lli0&t=718):
 
@@ -32,7 +36,6 @@ Now if you are familiar with the dlt REST API source, you know that we can pass 
             {
                 "name": "users",
                 "endpoint":{
-                    "path": "users?id={id}",
                     "params": {
                         "id": 2
                     },
@@ -42,7 +45,7 @@ Now if you are familiar with the dlt REST API source, you know that we can pass 
         ...
     }
 ```
-In this way the value `2` will replace the placeholder `{id}`. This works well for a single value. But what if we need to pass multiple values (`ids = [1, 2, 3]`) and the endpoint accepts only atomic values (`1` or `2` or `3`)?
+The value `2` will be passed as a query parameter to the endpoint and it will build an url like `users?id=2`. This works well for a single value. But what if we need to pass multiple values (`ids = [1, 2, 3]`) and the endpoint accepts only atomic values (`1` or `2` or `3`)?
 
 # Looking for a solution
 Our first idea would be to submit a feature request for dlt: when a list is passed, the REST API source will use all the values of the list. This sounds good, but let's look into that.
@@ -81,7 +84,10 @@ Because the config object for the REST API is a Python object, we can also assem
         {
             "name": f"users_{id}",
             "endpoint": {
-                "path": f"users?id={id}",
+                "path": f"users",
+                "params": {
+                    "id": id
+                },
             },
             "table_name": "users",
         }
@@ -132,9 +138,9 @@ The REST API source config object provides [a way to define relationships](https
             {
                 "name": "articles_by_category",
                 "endpoint":{
-                    "path": "articles?category={category_id}",
+                    "path": "articles",
                     "params": {
-                        "category_id": 2
+                        "category": 481
                     },
                 }
             },
@@ -157,7 +163,7 @@ The REST API source config object provides [a way to define relationships](https
 ```
 </details>
 
-But if you have a number of categories for which you need articles this can become a bit too much. Let's use Python:
+But if you have a number of categories for which you need articles this can become a bit too much. Let's do it with Python:
 
 ```python  
     category_ids = [481, 122, 839, ...]
@@ -166,7 +172,10 @@ But if you have a number of categories for which you need articles this can beco
         {
             "name": f"articles_by_category_{category_id}",
             "endpoint": {
-                "path": f"articles?category={category_id}",
+                "path": f"articles",
+                "params": {
+                    "category": category_id
+                },
             },
             "table_name": "articles_by_category",
         }
